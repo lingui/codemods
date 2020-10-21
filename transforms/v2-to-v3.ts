@@ -4,10 +4,12 @@ const transform: Transform = (fileInfo, api) => {
   const j = api.jscodeshift;
   const root = j(fileInfo.source);
 
-  changeToCoreDeprecatedFuncs(root)
-  changeReactImportToMacro(root)
-  pluralPropsChanges(root)
-  replaceDeprecatedMethodsToMacros(root)
+  renameDefaultRenderToDefaultComponent(root, j)
+  pluralPropsChanges(root, j)
+  // changeReactImportToMacro(root, j)
+  // changeToCoreDeprecatedFuncs(root)
+  // replaceDeprecatedMethodsToMacros(root)
+  // removeMacroWrap(root)
 
   return root.toSource();
 };
@@ -24,7 +26,7 @@ function changeToCoreDeprecatedFuncs(root) {
 /**
  *  Change import of components to macro from react package
 */
-function changeReactImportToMacro(root) {
+function changeReactImportToMacro(root, j) {
 }
 
 /**
@@ -32,7 +34,21 @@ function changeReactImportToMacro(root) {
  * - plural({ value, one: "# book", other: "# books" })
  * + plural(value, { one: "# book", other: "# books" })
 */
-function pluralPropsChanges(root) {
+function pluralPropsChanges(root, j) {
+  return root.find(j.CallExpression, {
+  	callee: {
+      name: "plural"
+    }
+  }).forEach(element => {
+    if (element.node.arguments.length === 1) {
+      element.node.arguments[0].properties.map((node, index) => {
+        if (node.key.name === "value") {
+          element.node.arguments[0].properties.splice(index, 1)
+          element.node.arguments.unshift(node.value)
+        }
+      });
+    }
+  })
 }
 
 /**
@@ -40,4 +56,28 @@ function pluralPropsChanges(root) {
  *  methods are removed and replaced with macros.
  */
 function replaceDeprecatedMethodsToMacros(root) {
+}
+
+/**
+ *  Rename I18nProvider.defaultRender prop to I18nProvider.defaultComponent
+ */
+function renameDefaultRenderToDefaultComponent(root, j) {
+  return root.find(j.JSXElement, {
+      openingElement: { name: { name: "I18nProvider" } }
+   }).forEach(path => {
+    const Node = path.value;
+
+    Node.openingElement.attributes
+    .filter(obj => obj.name.name === "defaultRender")
+    .forEach(item => {
+      item.name.name = "defaultComponent";
+    });
+  })
+}
+
+/**
+ *  Macros don't need to be wrapped inside i18n._: i18n._(t'Message') => t'Message'
+ */
+function removeMacroWrap(root) {
+
 }
