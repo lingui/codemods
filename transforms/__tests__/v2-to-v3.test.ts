@@ -1,6 +1,6 @@
 import { defineTest } from "jscodeshift/dist/testUtils";
 
-describe("plural transform", () => {
+describe("Plural props changed from an object, to a (value, object)", () => {
   defineTest(
     __dirname,
     "v2-to-v3",
@@ -9,7 +9,7 @@ describe("plural transform", () => {
   );
 });
 
-describe("i18nProvider transform", () => {
+describe("i18nProvider defaultRender to defaultComponent", () => {
   defineTest(
     __dirname,
     "v2-to-v3",
@@ -28,7 +28,7 @@ describe("Deprecated methods inside @lingui/react moved to @core and @macro tran
 });
 
 
-describe("i18n._(t``) is not required, use intead simply t``", () => {
+describe("i18n._(t`name`) is not required, use intead simply t`name`", () => {
   defineTest(
     __dirname,
     "v2-to-v3",

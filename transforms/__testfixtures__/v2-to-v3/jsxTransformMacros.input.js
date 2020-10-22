@@ -1,5 +1,5 @@
 import React from "react";
-import { DateFormat } from "@lingui/react";
+import { DateFormat, NumberFormat } from "@lingui/react";
 
 const GLOBAL_VALUE = new Date();
 const App = () => {
@@ -9,6 +9,10 @@ const App = () => {
       <DateFormat value={new Date()} />
       <DateFormat value={GLOBAL_VALUE} />
       <DateFormat value={"10/01/2015"} />
+      <NumberFormat value={10} format={{
+        style: "currency",
+        maximumFractionDigits: 2
+      }} />
     </div>
   );
 }

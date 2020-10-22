@@ -22,34 +22,46 @@ export default transform;
  * JSX transform
 */
 function changeJsxToCoreDeprecatedFuncs(root, j: JSCodeshift) {
-  root
-  .find(j.JSXElement, {
-    openingElement: { name: { name: "DateFormat" } }
-  })
-  .replaceWith((path) => {
-    const Node = path.value;
+  [
+    {
+      component: "DateFormat",
+      macro: "date"
+    },
+    {
+      component: "NumberFormat",
+      macro: "number"
+    }
+  ].forEach(mapper => {
+    root
+    .find(j.JSXElement, {
+      openingElement: { name: { name: mapper.component } }
+    })
+    .replaceWith((path) => {
+      const Node = path.value;
 
-    const valueProp = Node.openingElement.attributes.filter(
-      (obj) => obj.name.name === "value"
-    )[0];
-    const formatProp = Node.openingElement.attributes.filter(
-      (obj) => obj.name.name === "format"
-    );
+      const valueProp = Node.openingElement.attributes.filter(
+        (obj) => obj.name.name === "value"
+      )[0];
+      const formatProp = Node.openingElement.attributes.filter(
+        (obj) => obj.name.name === "format"
+      );
 
-    // format options are not required so
-    if (!formatProp.length) {
-      const ast = j.callExpression(j.identifier("date"), [
+      // format options are not required so
+      if (!formatProp.length) {
+        const ast = j.callExpression(j.identifier(mapper.macro), [
+          valueProp.value.expression,
+        ]);
+        return j.jsxExpressionContainer(ast);
+      }
+
+      const ast = j.callExpression(j.identifier(mapper.macro), [
         valueProp.value.expression,
+        formatProp[0].value.expression
       ]);
       return j.jsxExpressionContainer(ast);
-    }
+    });
+  })
 
-    const ast = j.callExpression(j.identifier("date"), [
-      valueProp.value.expression,
-      formatProp[0].value.expression
-    ]);
-    return j.jsxExpressionContainer(ast);
-  });
 }
 
 /**
