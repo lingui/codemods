@@ -1,0 +1,39 @@
+name: Main CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build_and_testing:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.yarn
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - uses: actions/setup-node@v2-beta
+        with:
+          always-auth: true
+          node-version: 12
+
+      - name: Install
+        run: yarn install --frozen-lockfile
+
+      - name: Build & Testing
+        run: |
+          yarn build
+          yarn test

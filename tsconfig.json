@@ -10,7 +10,6 @@
     "bin"
   ],
   "exclude": [
-    "transforms/__tests__/**",
-    "transforms/__testfixtures__/**",
+    "**/*.test.*",
   ]
 }
