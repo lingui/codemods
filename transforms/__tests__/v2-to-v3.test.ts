@@ -45,3 +45,12 @@ describe("Deprecated methods from @lingui/react transform the JSX", () => {
     "v2-to-v3/jsxTransformMacros",
   );
 });
+
+describe("Complete example with all the past actions", () => {
+  defineTest(
+    __dirname,
+    "v2-to-v3",
+    null,
+    "v2-to-v3/complete",
+  );
+});
