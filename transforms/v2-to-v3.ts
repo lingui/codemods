@@ -9,7 +9,6 @@ const transform: Transform = (fileInfo, api) => {
   removeMacroWrap(root, j)
   changeReactImportToNewImports(root, j)
   changeJsxToCoreDeprecatedFuncs(root, j)
-  // replaceDeprecatedMethodsToMacros(root, j)
 
   return root.toSource();
 };
@@ -154,13 +153,6 @@ function pluralPropsChanges(root, j) {
 }
 
 /**
- *  i18n.t(), i18n.plural(), i18n.select() and i18n.selectOrdinal()
- *  methods are removed and replaced with macros.
- */
-function replaceDeprecatedMethodsToMacros(root  , j: JSCodeshift) {
-}
-
-/**
  *  Rename I18nProvider.defaultRender prop to I18nProvider.defaultComponent
  */
 function renameDefaultRenderToDefaultComponent(root  , j: JSCodeshift) {
@@ -178,29 +170,31 @@ function renameDefaultRenderToDefaultComponent(root  , j: JSCodeshift) {
 }
 
 /**
- *  Macros don't need to be wrapped inside i18n._: i18n._(t'Message') => t'Message'
+ * Macros don't need to be wrapped inside i18n._: i18n._(t'Message') => t'Message'
+ * i18n._(t``), i18n._(plural``), i18n._(select``) and i18n._(selectOrdinal``)
  */
-function removeMacroWrap(root  , j: JSCodeshift) {
+function removeMacroWrap(root, j: JSCodeshift) {
   return root
-  .find(j.CallExpression, {
-    arguments: [
-      {
-        tag: {
-          name: "t"
+    .find(j.CallExpression, {
+      // if we want to filter by the argument...
+      // arguments: [
+      //   {
+      //     tag: {
+      //       name: "t"
+      //     }
+      //   }
+      // ],
+      callee: {
+        object: {
+          name: "i18n"
+        },
+        property: {
+          name: "_"
         }
       }
-    ],
-    callee: {
-      object: {
-        name: "i18n"
-      },
-      property: {
-        name: "_"
-      }
-    }
-  })
-  .replaceWith((nodePath) => {
-    const { node } = nodePath;
-    return node.arguments;
-  })
+    })
+    .replaceWith((nodePath) => {
+      const { node } = nodePath;
+      return node.arguments;
+    })
 }
