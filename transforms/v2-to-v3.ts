@@ -5,10 +5,10 @@ const transform: Transform = (fileInfo, api) => {
   const root = j(fileInfo.source);
 
   renameDefaultRenderToDefaultComponent(root, j)
-  pluralPropsChanges(root, j)
   removeMacroWrap(root, j)
   changeReactImportToNewImports(root, j)
   changeJsxToCoreDeprecatedFuncs(root, j)
+  pluralPropsChanges(root, j)
 
   return root.toSource();
 };
