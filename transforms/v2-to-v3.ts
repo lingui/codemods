@@ -6,10 +6,10 @@ const transform: Transform = (fileInfo, api) => {
 
   renameDefaultRenderToDefaultComponent(root, j)
   pluralPropsChanges(root, j)
-  changeReactImportToNewImports(root, j)
   removeMacroWrap(root, j)
-  // changeToCoreDeprecatedFuncs(root)
-  // replaceDeprecatedMethodsToMacros(root)
+  changeReactImportToNewImports(root, j)
+  changeJsxToCoreDeprecatedFuncs(root, j)
+  // replaceDeprecatedMethodsToMacros(root, j)
 
   return root.toSource();
 };
@@ -19,8 +19,30 @@ export default transform;
 /**
  * NumberFormat and DateFormat components were removed.
  * Use date and number formats from @lingui/core package instead.
+ * JSX transform
 */
-function changeToCoreDeprecatedFuncs(root: Collection  , j: JSCodeshift) {
+function changeJsxToCoreDeprecatedFuncs(root, j: JSCodeshift) {
+  root
+  .find(j.JSXElement, {
+    openingElement: { name: { name: "DateFormat" } }
+  })
+  .replaceWith((path) => {
+    const Node = path.value;
+
+    const valueProp = Node.openingElement.attributes.filter(
+      (obj) => obj.name.name === "value"
+    );
+    const formatProp = Node.openingElement.attributes.filter(
+      (obj) => obj.name.name === "format"
+    );
+
+    // todo: implement this expression and do generic for all the deprecated methods
+    const expression = `date(new Date(), { hour12: true })`;
+
+    return j.jsxExpressionContainer(
+      j.identifier(expression)
+    );
+  });
 }
 
 /**
@@ -54,6 +76,8 @@ function changeReactImportToNewImports(root: Collection  , j: JSCodeshift) {
  * + import { plural } from `"@lingui/macro"`
  */
 function migrateTo(root, linguiReactImports, j, lookupImport, newLookupImport, newPackageName) {
+  const FIRST_IMPORT = root.find(j.ImportDeclaration).at(0);
+
   const imports = root.find(j.ImportDeclaration, {
     source: {
       value: newPackageName
@@ -78,7 +102,7 @@ function migrateTo(root, linguiReactImports, j, lookupImport, newLookupImport, n
           path.value.specifiers.push(j.importSpecifier(j.identifier(newLookupImport)));
         });
       } else {
-        linguiReactImports.insertAfter(
+        FIRST_IMPORT.insertAfter(
           j.importDeclaration([j.importSpecifier(j.identifier(newLookupImport))], j.stringLiteral(newPackageName), "value")
         );
       }

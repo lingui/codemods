@@ -36,3 +36,12 @@ describe("i18n._(t``) is not required, use intead simply t``", () => {
     "v2-to-v3/macroWrap",
   );
 });
+
+describe("Deprecated methods from @lingui/react transform the JSX", () => {
+  defineTest(
+    __dirname,
+    "v2-to-v3",
+    null,
+    "v2-to-v3/jsxTransformMacros",
+  );
+});
