@@ -31,17 +31,24 @@ function changeJsxToCoreDeprecatedFuncs(root, j: JSCodeshift) {
 
     const valueProp = Node.openingElement.attributes.filter(
       (obj) => obj.name.name === "value"
-    );
+    )[0];
     const formatProp = Node.openingElement.attributes.filter(
       (obj) => obj.name.name === "format"
     );
 
-    // todo: implement this expression and do generic for all the deprecated methods
-    const expression = `date(new Date(), { hour12: true })`;
+    // format options are not required so
+    if (!formatProp.length) {
+      const ast = j.callExpression(j.identifier("date"), [
+        valueProp.value.expression,
+      ]);
+      return j.jsxExpressionContainer(ast);
+    }
 
-    return j.jsxExpressionContainer(
-      j.identifier(expression)
-    );
+    const ast = j.callExpression(j.identifier("date"), [
+      valueProp.value.expression,
+      formatProp[0].value.expression
+    ]);
+    return j.jsxExpressionContainer(ast);
   });
 }
 
