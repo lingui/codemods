@@ -46,19 +46,21 @@ function changeJsxToCoreDeprecatedFuncs(root, j: JSCodeshift) {
         (obj) => obj.name.name === "format"
       );
 
+      let ast = null;
       // format options are not required so
       if (!formatProp.length) {
-        const ast = j.callExpression(j.identifier(mapper.macro), [
+        ast = j.callExpression(j.identifier(mapper.macro), [
           valueProp.value.expression,
         ]);
-        return j.jsxExpressionContainer(ast);
+      } else {
+        ast = j.callExpression(j.identifier(mapper.macro), [
+          valueProp.value.expression,
+          formatProp[0].value.expression
+        ]);
       }
 
-      const ast = j.callExpression(j.identifier(mapper.macro), [
-        valueProp.value.expression,
-        formatProp[0].value.expression
-      ]);
-      return j.jsxExpressionContainer(ast);
+      // if someone uses the components inside ternaries we can't add {number()}, must be just number()
+      return path.parentPath.value.type === "ConditionalExpression" ? ast : j.jsxExpressionContainer(ast);
     });
   })
 
