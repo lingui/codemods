@@ -8,6 +8,7 @@ const transform: Transform = (fileInfo, api) => {
   removeMacroWrap(root, j)
   changeReactImportToNewImports(root, j)
   changeJsxToCoreDeprecatedFuncs(root, j)
+  changeFromMacroToCore(root, j)
   pluralPropsChanges(root, j)
 
   return root.toSource();
@@ -79,6 +80,21 @@ function changeReactImportToNewImports(root: Collection  , j: JSCodeshift) {
   migrateTo(root, linguiReactImports, j, "Trans", "Trans", "@lingui/macro");
   migrateTo(root, linguiReactImports, j, "NumberFormat", "number", "@lingui/core");
   migrateTo(root, linguiReactImports, j, "DateFormat", "date", "@lingui/core");
+}
+
+/**
+ *  Change import of components to macro from react package
+ * - { date } from `@lingui/macro` -> { date } from `@lingui/@core`
+*/
+function changeFromMacroToCore(root: Collection  , j: JSCodeshift) {
+  const linguiMacroImports = root.find(j.ImportDeclaration, {
+    source: {
+      value: "@lingui/macro"
+    }
+  });
+
+  migrateTo(root, linguiMacroImports, j, "number", "number", "@lingui/core");
+  migrateTo(root, linguiMacroImports, j, "date", "date", "@lingui/core");
 }
 
 /**

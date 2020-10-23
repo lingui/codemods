@@ -46,6 +46,15 @@ describe("Deprecated methods from @lingui/react transform the JSX", () => {
   );
 });
 
+describe("Move old macros methods to new core imports", () => {
+  defineTest(
+    __dirname,
+    "v2-to-v3",
+    null,
+    "v2-to-v3/changeMacrosToCore",
+  );
+});
+
 describe("Complete example with all the past actions", () => {
   defineTest(
     __dirname,
