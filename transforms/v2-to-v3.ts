@@ -134,7 +134,10 @@ function migrateTo(root, linguiReactImports, j, lookupImport, newLookupImport, n
       // we check if the lingui macro import is already present, because if it's already present we just have to push to that import
       if (imports.paths().length > 0) {
         imports.forEach((path) => {
-          path.value.specifiers.push(j.importSpecifier(j.identifier(newLookupImport)));
+          const foundIndex = path.value.specifiers.findIndex(x => x.imported.name === newLookupImport);
+          if (foundIndex === -1) {
+            path.value.specifiers.push(j.importSpecifier(j.identifier(newLookupImport)));
+          }
         });
       } else {
         FIRST_IMPORT.insertAfter(
