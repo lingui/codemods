@@ -93,7 +93,6 @@ function runTransform({ files, flags, parser, transformer, answers }: TransformO
     stripFinalNewline: false
   });
 
-  console.log(result)
   // @ts-ignore
   if (result.error) {
     // @ts-ignore
