@@ -95,6 +95,7 @@ function changeFromMacroToCore(root: Collection  , j: JSCodeshift) {
 
   migrateTo(root, linguiMacroImports, j, "number", "number", "@lingui/core");
   migrateTo(root, linguiMacroImports, j, "date", "date", "@lingui/core");
+  migrateTo(root, linguiMacroImports, j, "NumberFormat", "number", "@lingui/core");
 }
 
 /**
