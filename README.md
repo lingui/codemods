@@ -1,6 +1,7 @@
 <div align="center">
 <h1>Lingui Codemods<sub>js</sub></h1>
 <img src="https://github.com/lingui/codemods/workflows/Main%20CI/badge.svg" />
+<a href="https://www.npmjs.com/package/@lingui/codemods/v/latest"><img src="https://img.shields.io/npm/v/@lingui/codemods/latest.svg" /></a>
 
 This repository contains a collection of codemod scripts for use with [JSCodeshift](https://github.com/facebook/jscodeshift) that help update Lingui APIs.
 
