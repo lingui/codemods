@@ -7,12 +7,19 @@
     "type": "git",
     "url": "https://github.com/lingui/codemods.git"
   },
+  "files": [
+    "transforms/*.js",
+    "bin/*.js",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "bin": {
     "lingui-codemod": "./bin/lingui-codemod.js"
   },
   "scripts": {
     "test": "jest",
-    "build": "tsc",
+    "build": "tsc && chmod 755 ./bin/lingui-codemod.js",
     "jscodeshift": "jscodeshift"
   },
   "dependencies": {
