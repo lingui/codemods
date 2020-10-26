@@ -1,6 +1,12 @@
 name: Main CI
 
 on:
+  workflow_dispatch:
+    inputs:
+        distTag:
+          description: 'Dist tag to publish'
+          required: true
+          default: 'latest'
   pull_request:
   push:
     branches:
@@ -16,6 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Restore cache
@@ -30,6 +37,10 @@ jobs:
           always-auth: true
           node-version: 12
 
+      - name: Creates local .npmrc
+        if: ${{github.event.inputs.distTag == 'latest'}}
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       - name: Install
         run: yarn install --frozen-lockfile
 
@@ -37,3 +48,10 @@ jobs:
         run: |
           yarn build
           yarn test
+
+      - name: Release
+        if: ${{github.event.inputs.distTag == 'latest'}}
+        run: |
+          git config --global user.email "sergiomorenoalbert@gmail.com"
+          git config --global user.name "Lingui CI"
+          npm run release
