@@ -15,7 +15,11 @@ This repository contains a collection of codemod scripts for use with [JSCodeshi
 
 - `transform` - name of transform, see available transforms below.
 - `path` - files or directory to transform
-- use the `--dry` option for a dry-run and use `--print` to print the output for comparison
+- use the `--dry` option for a dry-run
+- use `--print` to print the output for
+ comparison
+- use `--remove-unused-imports` to remove unused imports once finished the codemod
+
 
 This will start an interactive wizard, and then run the specified transform.
 
@@ -53,7 +57,7 @@ npx @lingui/codemods <transform> <path> --jscodeshift="--printOptions='{\"quote\
 A CLI is built-in to help you migrate your codebase, will ask you some questions:
 
 ```sh
-➜  project git:(master) lingui-codemod
+➜  project git:(master) @lingui/codemods
 ? On which files or directory should the codemods be applied? for ex: ./src
 ? Which dialect of JavaScript do you use? for ex: JavaScript | Typescript | JavaScript with Flow
 ? Which transform would you like to apply? for ex: `v2-to-v3`

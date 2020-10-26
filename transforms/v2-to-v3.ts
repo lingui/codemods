@@ -1,6 +1,6 @@
 import { Transform, JSCodeshift, Collection } from "jscodeshift";
 
-const transform: Transform = (fileInfo, api) => {
+const transform: Transform = (fileInfo, api, options) => {
   const j = api.jscodeshift;
   const root = j(fileInfo.source);
 
@@ -11,7 +11,7 @@ const transform: Transform = (fileInfo, api) => {
   changeFromMacroToCore(root, j)
   pluralPropsChanges(root, j)
 
-  return root.toSource();
+  return root.toSource(options.printOptions);
 };
 
 export default transform;

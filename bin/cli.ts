@@ -48,22 +48,18 @@ type TransformOpts = {
   [string: string]: any
 }
 
-function runTransform({ files, flags, parser, transformer, answers }: TransformOpts) {
+function runTransform({ files, flags, parser, transformer }: TransformOpts) {
   const transformerPath = path.join(transformerDirectory, `${transformer}.js`);
 
   let args = [];
 
-  const { dry, print, explicitRequire } = flags;
+  const { dry, print, removeUnusedImports } = flags;
 
   if (dry) {
     args.push('--dry');
   }
   if (print) {
     args.push('--print');
-  }
-
-  if (explicitRequire === 'false') {
-    args.push('--explicit-require=false');
   }
 
   args.push('--verbose=2');
@@ -93,10 +89,31 @@ function runTransform({ files, flags, parser, transformer, answers }: TransformO
     stripFinalNewline: false
   });
 
-  // @ts-ignore
-  if (result.error) {
-    // @ts-ignore
-    throw result.error;
+  if (removeUnusedImports) {
+    let newArgs: any[] = args.filter(el => {
+      return el !== "--transform" && el !== transformerPath && el !== files
+    });
+    newArgs = newArgs.concat(['--transform', path.join(transformerDirectory, `remove-unused-imports.js`)]);
+    newArgs = newArgs.concat(files);
+
+    console.log(`Executing command: jscodeshift ${newArgs.join(' ')}`);
+
+    const removeUnusedResult = execa.sync(
+      jscodeshiftExecutable,
+      newArgs,
+      {
+        stdio: 'inherit',
+        stripFinalNewline: false
+      }
+    );
+
+    if (removeUnusedResult.failed) {
+      throw removeUnusedResult.stderr;
+    }
+  }
+
+  if (result.failed) {
+    throw result.stderr;
   }
 }
 
@@ -141,15 +158,15 @@ function run() {
         transform    One of the choices from https://github.com/@lingui/packages/codemods
         path         Files or directory to transform. Can be a glob like src/**.test.js
     Options
-      --force            Bypass Git safety checks and forcibly run codemods
-      --dry              Dry run (no changes are made to files)
-      --print            Print transformed files to your terminal
-      --explicit-require Transform only if React is imported in the file (default: true)
-      --jscodeshift  (Advanced) Pass options directly to jscodeshift
+      --force                    Bypass Git safety checks and forcibly run codemods
+      --dry                      Dry run (no changes are made to files)
+      --remove-unused-imports    Remove unused imports once finished the codemod
+      --print                    Print transformed files to your terminal
+      --jscodeshift              (Advanced) Pass options directly to jscodeshift
     `
     },
     {
-      boolean: ['force', 'dry', 'print', 'explicit-require', 'help'],
+      boolean: ['force', 'dry', 'print', 'remove-unused', 'help'],
       string: ['_'],
       alias: {
         h: 'help'
