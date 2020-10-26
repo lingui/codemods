@@ -90,7 +90,7 @@ describe('runTransform', () => {
   });
 
   it('runs jscodeshift for the given transformer', () => {
-    execaReturnValue = { error: null };
+    execaReturnValue = { failed: false };
     console.log = jest.fn();
     runTransform({
       files: 'src',
@@ -108,7 +108,7 @@ describe('runTransform', () => {
   });
 
   it('supports jscodeshift flags', () => {
-    execaReturnValue = { error: null };
+    execaReturnValue = { failed: false };
     console.log = jest.fn();
     runTransform({
       files: 'folder',
@@ -126,7 +126,7 @@ describe('runTransform', () => {
   });
 
   it('supports typescript parser', () => {
-    execaReturnValue = { error: null };
+    execaReturnValue = { failed: false };
     console.log = jest.fn();
     runTransform({
       files: 'folder',
@@ -144,7 +144,7 @@ describe('runTransform', () => {
   });
 
   it('supports jscodeshift custom arguments', () => {
-    execaReturnValue = { error: null };
+    execaReturnValue = { failed: false };
     console.log = jest.fn();
     runTransform({
       files: 'folder',
@@ -164,9 +164,38 @@ describe('runTransform', () => {
     );
   });
 
+  it('supports remove-unused-imports flag that runs a codemod to clean all unused imports', () => {
+    execaReturnValue = { failed: false };
+    console.log = jest.fn();
+    runTransform({
+      files: 'folder',
+      flags: {
+        removeUnusedImports: true,
+      },
+      parser: 'babel',
+      transformer: 'v2-to-v3'
+    });
+    expect(console.log).toBeCalledTimes(2)
+    // @ts-ignore
+    expect(console.log.mock.calls).toEqual([
+      [
+        `Executing command: jscodeshift --verbose=2 --ignore-pattern=**/node_modules/** --parser babel --extensions=jsx,js --transform ${path.join(
+          transformerDirectory,
+          'v2-to-v3.js'
+        )} folder`
+      ],
+      [
+        `Executing command: jscodeshift --verbose=2 --ignore-pattern=**/node_modules/** --parser babel --extensions=jsx,js --transform ${path.join(
+          transformerDirectory,
+          'remove-unused-imports.js'
+        )} folder`
+      ]
+    ]);
+  });
+
   it('rethrows jscodeshift errors', () => {
     const transformerError = new Error('bum');
-    execaReturnValue = { error: transformerError };
+    execaReturnValue = { failed: true, stderr: transformerError };
     console.log = jest.fn();
     expect(() => {
       runTransform({
