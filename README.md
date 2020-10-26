@@ -57,7 +57,7 @@ npx @lingui/codemods <transform> <path> --jscodeshift="--printOptions='{\"quote\
 A CLI is built-in to help you migrate your codebase, will ask you some questions:
 
 ```sh
-➜  project git:(master) @lingui/codemods
+➜  project git:(master) npx @lingui/codemods
 ? On which files or directory should the codemods be applied? for ex: ./src
 ? Which dialect of JavaScript do you use? for ex: JavaScript | Typescript | JavaScript with Flow
 ? Which transform would you like to apply? for ex: `v2-to-v3`
