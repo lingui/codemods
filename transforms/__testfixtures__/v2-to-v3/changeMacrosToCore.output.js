@@ -1,3 +1,3 @@
 import { React } from "react";
-import { date } from "@lingui/core";
-import { t } from "@lingui/macro";
+import { i18n } from "@lingui/core";
+import { t, Trans } from "@lingui/macro";

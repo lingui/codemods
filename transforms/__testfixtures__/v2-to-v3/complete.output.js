@@ -1,16 +1,16 @@
 import React from "react";
-import { number, date } from "@lingui/core";
+import { i18n } from "@lingui/core";
 import { withI18n } from "@lingui/react";
 import { plural, Trans } from "@lingui/macro";
 
-const App = ({ i18n }) => {
+const App = () => {
   return (
     <div>
       <div>
-        {number(1_000_000, { currency: "EUR" })}
+        {i18n.number(1_000_000, { currency: "EUR" })}
       </div>
       <div>
-        {date(new Date(), { hour12: true })}
+        {i18n.date(new Date(), { hour12: true })}
       </div>
       <Trans>Component to replace</Trans>
       {/* TODO: if there isn't any with children we should keep lingui/react  */}
