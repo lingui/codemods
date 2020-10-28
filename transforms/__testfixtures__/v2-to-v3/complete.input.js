@@ -2,7 +2,7 @@ import React from "react";
 import { NumberFormat, DateFormat, Trans, withI18n } from "@lingui/react"
 import { plural } from "@lingui/macro"
 
-const App = ({ i18n }) => {
+const App = () => {
   return (
     <div>
       <div>

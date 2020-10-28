@@ -25,11 +25,11 @@ function changeJsxToCoreDeprecatedFuncs(root, j: JSCodeshift) {
   [
     {
       component: "DateFormat",
-      macro: "date"
+      macro: "i18n.date"
     },
     {
       component: "NumberFormat",
-      macro: "number"
+      macro: "i18n.number"
     }
   ].forEach(mapper => {
     root
@@ -60,7 +60,17 @@ function changeJsxToCoreDeprecatedFuncs(root, j: JSCodeshift) {
       }
 
       // if someone uses the components inside ternaries we can't add {number()}, must be just number()
-      return path.parentPath.value.type === "ConditionalExpression" ? ast : j.jsxExpressionContainer(ast);
+      if (path.parentPath.value.type === "ConditionalExpression" || path.parentPath.value.type === "VariableDeclarator") {
+        return ast
+      }
+
+      // if is a direct return, just add parenthesis
+      if (path.parentPath.value.type === "ReturnStatement") {
+        return j.parenthesizedExpression(ast);
+      }
+
+      // if not, just add {}
+      return j.jsxExpressionContainer(ast);
     });
   })
 
@@ -79,9 +89,13 @@ function changeReactImportToNewImports(root: Collection  , j: JSCodeshift) {
     }
   });
 
+  migrateTo(root, linguiReactImports, j, "Plural", "Plural", "@lingui/macro");
+  migrateTo(root, linguiReactImports, j, "Select", "Select", "@lingui/macro");
+  migrateTo(root, linguiReactImports, j, "SelectOrdinal", "SelectOrdinal", "@lingui/macro");
   migrateTo(root, linguiReactImports, j, "Trans", "Trans", "@lingui/macro");
-  migrateTo(root, linguiReactImports, j, "NumberFormat", "number", "@lingui/core");
-  migrateTo(root, linguiReactImports, j, "DateFormat", "date", "@lingui/core");
+
+  migrateTo(root, linguiReactImports, j, "NumberFormat", "i18n", "@lingui/core");
+  migrateTo(root, linguiReactImports, j, "DateFormat", "i18n", "@lingui/core");
 }
 
 /**
@@ -96,8 +110,8 @@ function changeFromMacroToCore(root: Collection  , j: JSCodeshift) {
   });
 
   migrateTo(root, linguiMacroImports, j, "number", "number", "@lingui/core");
-  migrateTo(root, linguiMacroImports, j, "date", "date", "@lingui/core");
-  migrateTo(root, linguiMacroImports, j, "NumberFormat", "number", "@lingui/core");
+  migrateTo(root, linguiMacroImports, j, "date", "i18n", "@lingui/core");
+  migrateTo(root, linguiMacroImports, j, "NumberFormat", "i18n", "@lingui/core");
 }
 
 /**
@@ -120,8 +134,10 @@ function migrateTo(root, linguiReactImports, j, lookupImport, newLookupImport, n
       value: newPackageName
     }
   });
+
   linguiReactImports.forEach((path) => {
     const node = path.value;
+    if (!node) return;
     const transImportIndex = node.specifiers.findIndex((el) => el.imported.name === lookupImport);
 
     if (transImportIndex !== -1) {

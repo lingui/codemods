@@ -5,6 +5,7 @@ import path from 'path';
 import execa from 'execa';
 import chalk from 'chalk';
 import isGitClean from 'is-git-clean';
+import pkg from "../package.json";
 
 const transformerDirectory = path.join(__dirname, '../', 'transforms');
 const jscodeshiftExecutable = require.resolve('.bin/jscodeshift');
@@ -151,7 +152,7 @@ function expandFilePathsIfNeeded(filesBeforeExpansion) {
 function run() {
   const cli = meow(
     {
-      description: 'Codemods for @lingui APIs.',
+      description: `Codemods for @lingui APIs. Version: ${pkg.version}`,
       help: `
     Usage
       $ npx lingui-codemod <transform> <path> <...options>
@@ -166,7 +167,7 @@ function run() {
     `
     },
     {
-      boolean: ['force', 'dry', 'print', 'remove-unused', 'help'],
+      boolean: ['force', 'dry', 'print', 'remove-unused-imports', 'help'],
       string: ['_'],
       alias: {
         h: 'help'
