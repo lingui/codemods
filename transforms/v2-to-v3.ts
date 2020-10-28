@@ -89,7 +89,11 @@ function changeReactImportToNewImports(root: Collection  , j: JSCodeshift) {
     }
   });
 
+  migrateTo(root, linguiReactImports, j, "Plural", "Plural", "@lingui/macro");
+  migrateTo(root, linguiReactImports, j, "Select", "Select", "@lingui/macro");
+  migrateTo(root, linguiReactImports, j, "SelectOrdinal", "SelectOrdinal", "@lingui/macro");
   migrateTo(root, linguiReactImports, j, "Trans", "Trans", "@lingui/macro");
+
   migrateTo(root, linguiReactImports, j, "NumberFormat", "i18n", "@lingui/core");
   migrateTo(root, linguiReactImports, j, "DateFormat", "i18n", "@lingui/core");
 }
