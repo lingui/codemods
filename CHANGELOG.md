@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/lingui/codemods/compare/v1.0.0...v1.0.1) (2020-10-28)
+
+
+### Bug Fixes
+
+* import date-number from i18n instance ([7d56f32](https://github.com/lingui/codemods/commit/7d56f3219c36693186467851c4572545e38d431e))
+* pending react-components to macro migrated ([1830988](https://github.com/lingui/codemods/commit/18309883b5842bbefffb94b915cda40acc4cc6d0))
+
 # 1.0.0 (2020-10-26)
 
 
