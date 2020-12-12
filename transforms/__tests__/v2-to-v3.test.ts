@@ -28,7 +28,7 @@ describe("Deprecated methods inside @lingui/react moved to @core and @macro tran
 });
 
 
-describe("i18n._(t`name`) is not required, use intead simply t`name`", () => {
+describe("i18n._(t`name`) is not required, use instead simply t`name`", () => {
   defineTest(
     __dirname,
     "v2-to-v3",
