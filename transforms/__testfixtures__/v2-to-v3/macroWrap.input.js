@@ -2,6 +2,7 @@ import { i18n } from "@lingui/core";
 import { t, plural, select, selectOrdinal } from "@lingui/macro";
 
 i18n._(t`Some input`)
+i18n._(t('my.id')`Some input`)
 i18n._(
   plural({
     value: 1,

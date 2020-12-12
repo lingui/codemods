@@ -10,6 +10,7 @@ const transform: Transform = (fileInfo, api, options) => {
   changeJsxToCoreDeprecatedFuncs(root, j)
   changeFromMacroToCore(root, j)
   pluralPropsChanges(root, j)
+  tWithIdPropsChanges(root, j)
 
   return root.toSource(options.printOptions);
 };
@@ -235,4 +236,31 @@ function removeMacroWrap(root, j: JSCodeshift) {
       const { node } = nodePath;
       return node.arguments;
     })
+}
+
+/**
+ * t arguments changed. Id needs to be passed as a part of an object.
+ * t('id')'Message') => t({ id: 'id', message: `Message` })
+ * No attempts are made to convert template literal into a regular string; this
+ * is a project-specific codestyle rule that should be fixed with Prettier or
+ * eslint.
+ */
+function tWithIdPropsChanges(root, j: JSCodeshift) {
+  return root
+      .find(j.TaggedTemplateExpression, {
+        tag: {
+          callee: {
+            name: "t"
+          }
+        }
+      })
+      .replaceWith((nodePath) => {
+        const id = nodePath.node.tag.arguments[0].value;
+        return j.callExpression(nodePath.node.tag.callee, [
+          j.objectExpression([
+            j.property("init", j.identifier("id"), j.literal(id)),
+            j.property("init", j.identifier("message"), nodePath.node.quasi)
+          ])
+        ]);
+      })
 }
