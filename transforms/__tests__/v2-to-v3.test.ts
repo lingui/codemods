@@ -63,3 +63,12 @@ describe("Complete example with all the past actions", () => {
     "v2-to-v3/complete",
   );
 });
+
+describe("t props changed from an argument, to an object", () => {
+  defineTest(
+      __dirname,
+      "v2-to-v3",
+      null,
+      "v2-to-v3/t",
+  );
+});

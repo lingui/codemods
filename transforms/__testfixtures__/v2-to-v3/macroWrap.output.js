@@ -3,8 +3,8 @@ import { t, plural, select, selectOrdinal } from "@lingui/macro";
 
 t`Some input`
 t({
-  id: 'my.id',
-  message: `Some input`,
+  id: "my.id",
+  message: `Some input`
 })
 plural(1, {
   one: 'SORT_#_RESULT_BY:',
