@@ -1,6 +1,6 @@
 {
   "name": "@lingui/codemods",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "@lingui codemod scripts",
   "license": "MIT",
   "repository": {

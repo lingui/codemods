@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/lingui/codemods/compare/v1.0.1...v1.1.0) (2020-12-12)
+
+
+### Features
+
+* Convert t tags with ids to new object syntax ([#7](https://github.com/lingui/codemods/issues/7)) ([dab3838](https://github.com/lingui/codemods/commit/dab383839b015a2219e27bdd59fdc68938a783a6))
+
 ## [1.0.1](https://github.com/lingui/codemods/compare/v1.0.0...v1.0.1) (2020-10-28)
 
 
