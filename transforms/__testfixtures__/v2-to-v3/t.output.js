@@ -15,3 +15,9 @@ t({
   id: "my.id",
   message: `Some complex value (${value.toFixed(2)})`
 })
+const withComment = t({
+  message: `Some message`,
+  comment: "a description of the message"
+})
+test`no transform`
+test('id')`no transform`
