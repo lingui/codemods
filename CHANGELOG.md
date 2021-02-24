@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/lingui/codemods/compare/v1.1.0...v1.1.1) (2021-02-24)
+
+
+### Bug Fixes
+
+* include comments in t macro transform ([#12](https://github.com/lingui/codemods/issues/12)) ([5923586](https://github.com/lingui/codemods/commit/59235869c6a5bbe3a16eab1f210d7e22f2a8432b))
+
 # [1.1.0](https://github.com/lingui/codemods/compare/v1.0.1...v1.1.0) (2020-12-12)
 
 
