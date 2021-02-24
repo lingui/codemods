@@ -246,21 +246,34 @@ function removeMacroWrap(root, j: JSCodeshift) {
  * eslint.
  */
 function tWithIdPropsChanges(root, j: JSCodeshift) {
+  const objectProperty = (key: string, value) => 
+    j.property('init', j.identifier(key), value);
+
   return root
-      .find(j.TaggedTemplateExpression, {
-        tag: {
-          callee: {
-            name: "t"
-          }
-        }
-      })
-      .replaceWith((nodePath) => {
-        const id = nodePath.node.tag.arguments[0].value;
-        return j.callExpression(nodePath.node.tag.callee, [
-          j.objectExpression([
-            j.property("init", j.identifier("id"), j.literal(id)),
-            j.property("init", j.identifier("message"), nodePath.node.quasi)
-          ])
-        ]);
-      })
+    .find(j.TaggedTemplateExpression)
+    .filter(item => {
+      const hasId = item.get('tag', 'callee', 'name').value === 't'
+      const hasComments = (item.get('leadingComments', '0', 'value').value || '').startsWith('*i18n:');
+      return hasId || hasComments;
+    })
+    .replaceWith(nodePath => {
+    const id = nodePath.get('tag', 'arguments', '0', 'value').value;
+      const message = nodePath.get('quasi').value;
+      const comment = nodePath.get('leadingComments', '0', 'value').value;
+
+      const properties = [objectProperty('message', message)];
+    
+      if (id) {
+        properties.unshift(objectProperty('id', j.literal(id)));
+      }
+    
+      if (comment) {
+        properties.push(
+          objectProperty('comment', j.literal(comment.replace(/^\*i18n:\s?/, '')))
+        );
+      }
+    
+      return j.callExpression(j.identifier('t'), [j.objectExpression(properties)]);
+    })
+    .toSource();
 }
