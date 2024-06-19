@@ -1,5 +1,5 @@
-let gitStatusReturnValue;
-let execaReturnValue;
+let gitStatusReturnValue: boolean | Error;
+let execaReturnValue: { failed: boolean, stderr?: Error };
 
 jest.setMock('execa', {
   sync: () => execaReturnValue
@@ -30,8 +30,8 @@ describe('check-git-status', () => {
     // @ts-ignore
     process.exit = jest.fn();
     checkGitStatus();
-    expect(console.log).not.toBeCalled();
-    expect(process.exit).not.toBeCalled();
+    expect(console.log).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
   });
 
   it('does not exit and output any logs when not a git repo', () => {
@@ -43,8 +43,8 @@ describe('check-git-status', () => {
     // @ts-ignore
     process.exit = jest.fn();
     checkGitStatus();
-    expect(console.log).not.toBeCalled();
-    expect(process.exit).not.toBeCalled();
+    expect(console.log).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
   });
 
   it('exits and output logs when git repo is dirty', () => {
@@ -53,8 +53,8 @@ describe('check-git-status', () => {
     // @ts-ignore
     process.exit = jest.fn();
     checkGitStatus();
-    expect(console.log).toBeCalled();
-    expect(process.exit).toBeCalled();
+    expect(console.log).toHaveBeenCalled();
+    expect(process.exit).toHaveBeenCalled();
   });
 
   it('exits and output logs when git detection fail', () => {
@@ -63,8 +63,8 @@ describe('check-git-status', () => {
     // @ts-ignore
     process.exit = jest.fn();
     checkGitStatus();
-    expect(console.log).toBeCalled();
-    expect(process.exit).toBeCalled();
+    expect(console.log).toHaveBeenCalled();
+    expect(process.exit).toHaveBeenCalled();
   });
 
   it('does not exit when git repo is dirty and force flag is given', () => {
@@ -73,10 +73,10 @@ describe('check-git-status', () => {
     // @ts-ignore
     process.exit = jest.fn();
     checkGitStatus(true);
-    expect(console.log).toBeCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       'WARNING: Git directory is not clean. Forcibly continuing.'
     );
-    expect(process.exit).not.toBeCalled();
+    expect(process.exit).not.toHaveBeenCalled();
   });
 });
 
@@ -93,12 +93,12 @@ describe('runTransform', () => {
     execaReturnValue = { failed: false };
     console.log = jest.fn();
     runTransform({
-      files: 'src',
+      files: ['src'],
       flags: {},
       parser: 'flow',
       transformer: 'rename-unsafe-xyz'
     });
-    expect(console.log).toBeCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       // eslint-disable-next-line max-len
       `Executing command: jscodeshift --verbose=2 --ignore-pattern=**/node_modules/** --parser flow --extensions=jsx,js --transform ${path.join(
         transformerDirectory,
@@ -111,12 +111,12 @@ describe('runTransform', () => {
     execaReturnValue = { failed: false };
     console.log = jest.fn();
     runTransform({
-      files: 'folder',
+      files: ['folder'],
       flags: { dry: true },
       parser: 'flow',
       transformer: 'v2-to-v3'
     });
-    expect(console.log).toBeCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       // eslint-disable-next-line max-len
       `Executing command: jscodeshift --dry --verbose=2 --ignore-pattern=**/node_modules/** --parser flow --extensions=jsx,js --transform ${path.join(
         transformerDirectory,
@@ -129,12 +129,12 @@ describe('runTransform', () => {
     execaReturnValue = { failed: false };
     console.log = jest.fn();
     runTransform({
-      files: 'folder',
+      files: ['folder'],
       flags: { dry: true },
       parser: 'tsx',
       transformer: 'rename-unsafe-lifecycles'
     });
-    expect(console.log).toBeCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       // eslint-disable-next-line max-len
       `Executing command: jscodeshift --dry --verbose=2 --ignore-pattern=**/node_modules/** --parser tsx --extensions=tsx,ts,jsx,js --transform ${path.join(
         transformerDirectory,
@@ -147,7 +147,7 @@ describe('runTransform', () => {
     execaReturnValue = { failed: false };
     console.log = jest.fn();
     runTransform({
-      files: 'folder',
+      files: ['folder'],
       flags: {
         dry: true,
         jscodeshift: 'verbose=2 --printOptions=\'{"quote":"double"}\''
@@ -155,7 +155,7 @@ describe('runTransform', () => {
       parser: 'babel',
       transformer: 'v2-to-v3'
     });
-    expect(console.log).toBeCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       // eslint-disable-next-line max-len
       `Executing command: jscodeshift --dry --verbose=2 --ignore-pattern=**/node_modules/** --parser babel --extensions=jsx,js --transform ${path.join(
         transformerDirectory,
@@ -168,14 +168,14 @@ describe('runTransform', () => {
     execaReturnValue = { failed: false };
     console.log = jest.fn();
     runTransform({
-      files: 'folder',
+      files: ['folder'],
       flags: {
         removeUnusedImports: true,
       },
       parser: 'babel',
       transformer: 'v2-to-v3'
     });
-    expect(console.log).toBeCalledTimes(2)
+    expect(console.log).toHaveBeenCalledTimes(2)
     // @ts-ignore
     expect(console.log.mock.calls).toEqual([
       [
@@ -199,11 +199,11 @@ describe('runTransform', () => {
     console.log = jest.fn();
     expect(() => {
       runTransform({
-        files: 'src',
+        files: ['src'],
         flags: {},
         parser: 'flow',
-        transformers: ['tape']
+        transformer: 'tape'
       });
-    }).toThrowError(transformerError);
+    }).toThrow(transformerError);
   });
 });

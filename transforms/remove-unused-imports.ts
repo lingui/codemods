@@ -1,16 +1,16 @@
-import { Transform } from "jscodeshift";
+import { Transform, ASTPath, ImportDeclaration } from 'jscodeshift';
 
 const transform: Transform = (fileInfo, api, options) => {
   const j = api.jscodeshift;
   const root = j(fileInfo.source);
 
-  const filterAndTransformRequires = path => {
+  const filterAndTransformRequires = (path: ASTPath<ImportDeclaration>)  => {
     const specifiers = path.value.specifiers;
     const parentScope = j(path).closestScope();
     return (
       specifiers.filter(importPath => {
         const varName = importPath.local.name;
-        const requireName = importPath.imported
+        const requireName = importPath.type === 'ImportSpecifier'
           ? importPath.imported.name
           : importPath.local.name;
         const scopeNode = path.scope.node;
@@ -29,7 +29,7 @@ const transform: Transform = (fileInfo, api, options) => {
         const decoratorUsages = parentScope.find(j.ClassDeclaration).filter((it: any) => {
           return (
             (it.value.decorators || []).filter(
-              decorator => decorator.expression.name === varName
+              (decorator: any) => decorator.expression.name === varName
             ).length > 0
           );
         });

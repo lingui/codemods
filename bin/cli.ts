@@ -16,7 +16,7 @@ function checkGitStatus(force?: boolean) {
   try {
     clean = isGitClean.sync(process.cwd());
     errorMessage = 'Git directory is not clean';
-  } catch (err) {
+  } catch (err: any) {
     if (err && err.stderr && err.stderr.indexOf('Not a git repository') >= 0) {
       clean = true;
     }
@@ -40,19 +40,17 @@ function checkGitStatus(force?: boolean) {
   }
 }
 
-type TransformOpts = {
-  files: string,
+type TransformOpts = {
+  files: string[],
   flags?: Record<string, unknown>,
   parser: string,
   transformer?: string,
-  answers?: string,
-  [string: string]: any
 }
 
 function runTransform({ files, flags, parser, transformer }: TransformOpts) {
   const transformerPath = path.join(transformerDirectory, `${transformer}.js`);
 
-  let args = [];
+  let args: string[] = [];
 
   const { dry, print, removeUnusedImports } = flags;
 
@@ -78,10 +76,10 @@ function runTransform({ files, flags, parser, transformer }: TransformOpts) {
   args = args.concat(['--transform', transformerPath]);
 
   if (flags.jscodeshift) {
-    args = args.concat(flags.jscodeshift);
+    args = args.concat(flags.jscodeshift as string[]);
   }
 
-  args = args.concat(files);
+  args = args.concat([files.join(' ')]);
 
   console.log(`Executing command: jscodeshift ${args.join(' ')}`);
 
@@ -91,8 +89,8 @@ function runTransform({ files, flags, parser, transformer }: TransformOpts) {
   });
 
   if (removeUnusedImports) {
-    let newArgs: any[] = args.filter(el => {
-      return el !== "--transform" && el !== transformerPath && el !== files
+    let newArgs: string[] = args.filter(el => {
+      return el !== "--transform" && el !== transformerPath && el !== files.join(' ')
     });
     newArgs = newArgs.concat(['--transform', path.join(transformerDirectory, `remove-unused-imports.js`)]);
     newArgs = newArgs.concat(files);
@@ -140,7 +138,7 @@ const PARSER_INQUIRER_CHOICES = [
   }
 ];
 
-function expandFilePathsIfNeeded(filesBeforeExpansion) {
+function expandFilePathsIfNeeded(filesBeforeExpansion: string[]) {
   const shouldExpandFiles = filesBeforeExpansion.some(file =>
     file.includes('*')
   );
@@ -151,26 +149,28 @@ function expandFilePathsIfNeeded(filesBeforeExpansion) {
 
 function run() {
   const cli = meow(
-    {
-      description: `Codemods for @lingui APIs. Version: ${pkg.version}`,
-      help: `
+    `
     Usage
       $ npx lingui-codemod <transform> <path> <...options>
-        transform    One of the choices from https://github.com/@lingui/packages/codemods
+        transform    One of the [${TRANSFORMER_INQUIRER_CHOICES.map((o) => o.value).join(', ')}]
         path         Files or directory to transform. Can be a glob like src/**.test.js
     Options
       --force                    Bypass Git safety checks and forcibly run codemods
       --dry                      Dry run (no changes are made to files)
       --remove-unused-imports    Remove unused imports once finished the codemod
       --print                    Print transformed files to your terminal
+      --parser                   Which dialect of JavaScript do you use? One of the [${PARSER_INQUIRER_CHOICES.map((o) => o.value).join(', ')}]
       --jscodeshift              (Advanced) Pass options directly to jscodeshift
-    `
-    },
+    `,
     {
-      boolean: ['force', 'dry', 'print', 'remove-unused-imports', 'help'],
-      string: ['_'],
-      alias: {
-        h: 'help'
+      description: `Codemods for @lingui APIs. Version: ${pkg.version}`,
+      version: pkg.version,
+      flags: {
+        force: { type: 'boolean' },
+        parser: { type: 'string' },
+        dry: { type: 'boolean'},
+        print: { type: 'boolean'},
+        removeUnusedImports: { type: 'boolean'},
       }
     }
   );
@@ -199,7 +199,7 @@ function run() {
         when: !cli.input[1],
         default: '.',
         // validate: () =>
-        filter: files => files.trim()
+        filter: (files) => files.trim()
       },
       {
         type: 'list',
@@ -219,7 +219,7 @@ function run() {
         choices: TRANSFORMER_INQUIRER_CHOICES
       },
     ])
-    .then(answers => {
+    .then((answers: {files: string, transformer: string, parser: string}) => {
       const { files, transformer, parser } = answers;
 
       const filesBeforeExpansion = cli.input[1] || files;
@@ -230,7 +230,7 @@ function run() {
 
       if (!filesExpanded.length) {
         console.log(
-          `No files found matching ${filesBeforeExpansion.join(' ')}`
+          `No files found matching ${filesBeforeExpansion}`
         );
         return null;
       }
@@ -240,7 +240,6 @@ function run() {
         flags: cli.flags,
         parser: selectedParser,
         transformer: selectedTransformer,
-        answers: answers
       });
     });
 }

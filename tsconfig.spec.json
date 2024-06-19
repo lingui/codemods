@@ -5,16 +5,11 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "jsx": "preserve",
-    "outDir": "./dist",
     "strict": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
   },
   "include": [
-    "transforms",
-    "bin"
-  ],
-  "exclude": [
     "**/*.test.*",
-    "**/__testfixtures__/**"
-  ]
+    "./types.d.ts"
+  ],
 }

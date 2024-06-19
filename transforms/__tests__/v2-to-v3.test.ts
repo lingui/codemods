@@ -1,11 +1,25 @@
 import { defineTest } from "jscodeshift/dist/testUtils";
 
+
 describe("Plural props changed from an object, to a (value, object)", () => {
   defineTest(
     __dirname,
     "v2-to-v3",
     null,
     "v2-to-v3/plural",
+  );
+});
+
+describe("Plural props changed from an object, to a (value, object) Typescript", () => {
+  defineTest(
+    __dirname,
+    "v2-to-v3",
+    null,
+    "v2-to-v3/plural-ts",
+    {
+
+      parser: 'ts'
+    }
   );
 });
 
