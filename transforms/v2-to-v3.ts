@@ -88,6 +88,8 @@ function changeJsxToCoreDeprecatedFuncs(root: Collection, j: JSCodeshift) {
 
         // if is a direct return, just add parenthesis
         if (path.parentPath.value.type === "ReturnStatement") {
+          // return ast;
+
           return j.parenthesizedExpression(ast);
         }
 

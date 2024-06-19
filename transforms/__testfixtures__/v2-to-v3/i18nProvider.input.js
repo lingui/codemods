@@ -1,5 +1,5 @@
 import React from "react";
-import { I18nProvider } from "@lingui/react"
+import { I18nProvider } from "@lingui/react"
 
 export const App = () => {
   return (
