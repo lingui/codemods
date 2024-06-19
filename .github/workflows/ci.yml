@@ -3,14 +3,14 @@ name: Main CI
 on:
   workflow_dispatch:
     inputs:
-        distTag:
-          description: 'Dist tag to publish'
-          required: true
-          default: 'latest'
+      distTag:
+        description: "Dist tag to publish"
+        required: true
+        default: "latest"
   pull_request:
   push:
     branches:
-      - 'main'
+      - "main"
 
 jobs:
   build_and_testing:
@@ -29,7 +29,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           always-auth: true
-          cache: 'yarn'
+          cache: "yarn"
           node-version: 20
 
       - name: Creates local .npmrc
@@ -38,6 +38,9 @@ jobs:
 
       - name: Install
         run: yarn install --frozen-lockfile
+
+      - name: Check Prettier Formatting
+        run: yarn prettier:check
 
       - name: Build & Testing
         run: |
