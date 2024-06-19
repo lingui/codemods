@@ -5,7 +5,7 @@ import { plural, Trans } from "@lingui/macro";
 
 const App = () => {
   return (
-    <div>
+    (<div>
       <div>
         {i18n.number(1_000_000, { currency: "EUR" })}
       </div>
@@ -26,7 +26,7 @@ const App = () => {
       })}
       {select({ value, one: "# book", other: "# books" })}
       {selectOrdinal({ value, one: "# book", other: "# books" })}
-    </div>
+    </div>)
   );
 }
 

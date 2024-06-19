@@ -3,14 +3,14 @@ name: Main CI
 on:
   workflow_dispatch:
     inputs:
-        distTag:
-          description: 'Dist tag to publish'
-          required: true
-          default: 'latest'
+      distTag:
+        description: "Dist tag to publish"
+        required: true
+        default: "latest"
   pull_request:
   push:
     branches:
-      - 'main'
+      - "main"
 
 jobs:
   build_and_testing:
@@ -21,22 +21,16 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Restore cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.yarn
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v4
         with:
           always-auth: true
-          node-version: 12
+          cache: "yarn"
+          node-version: 20
 
       - name: Creates local .npmrc
         if: ${{github.event.inputs.distTag == 'latest'}}
@@ -44,6 +38,9 @@ jobs:
 
       - name: Install
         run: yarn install --frozen-lockfile
+
+      - name: Check Prettier Formatting
+        run: yarn prettier:check
 
       - name: Build & Testing
         run: |

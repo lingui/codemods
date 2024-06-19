@@ -1,7 +1,5 @@
 module.exports = {
-  branches: [
-    "main"
-  ],
+  branches: ["main"],
   plugins: [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
@@ -10,14 +8,15 @@ module.exports = {
       "@semantic-release/npm",
       {
         npmPublish: true,
-        pkgRoot: "."
+        pkgRoot: ".",
       },
     ],
     {
       assets: ["package.json", "CHANGELOG.md"],
-      message: "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+      message:
+        "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
       path: "@semantic-release/git",
     },
-    "@semantic-release/github"
+    "@semantic-release/github",
   ],
 };

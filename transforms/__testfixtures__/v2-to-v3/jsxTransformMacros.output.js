@@ -7,7 +7,7 @@ const GLOBAL_VALUE = new Date();
 const App = () => {
   const count = 1;
   return (
-    <div>
+    (<div>
       {i18n.date(new Date(), { hour12: true })}
       {i18n.date(new Date())}
       {i18n.date(GLOBAL_VALUE)}
@@ -48,7 +48,7 @@ const App = () => {
         female="Her book"
         other="Their book"
       />
-    </div>
+    </div>)
   );
 }
 
