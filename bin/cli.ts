@@ -122,6 +122,10 @@ const TRANSFORMER_INQUIRER_CHOICES = [
     name: "v2-to-v3: Migrates v2 standards to the new standards of @lingui v3.X.X",
     value: "v2-to-v3",
   },
+  {
+    name: "v5: Split @lingui/macro imports to specific packages @lingui/react/macro and @lingui/core/macro",
+    value: "split-macro-imports",
+  },
 ];
 
 const PARSER_INQUIRER_CHOICES = [

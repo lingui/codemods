@@ -1,4 +1,4 @@
-import { defineTest } from "jscodeshift/dist/testUtils";
+import { defineTest, defineInlineTest } from "jscodeshift/dist/testUtils";
 
 describe("Plural props changed from an object, to a (value, object)", () => {
   defineTest(__dirname, "v2-to-v3", null, "v2-to-v3/plural");
