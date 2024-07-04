@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          always-auth: true
+          node-version: 20
+          cache: "yarn"
+          scope: "@lingui"
+
+      - name: Install & Build
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+
+      - name: Creates local .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Prepare Lingui-Bot git account
+        uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          name: "Lingui Bot"
+          email: "linguibot@gmail.com"
+          actor: "lingui-bot"
+          token: "${{ secrets.GH_TOKEN }}"
+
+      - name: Release
+        run: npm run release

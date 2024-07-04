@@ -1,13 +1,6 @@
 name: Main CI
 
 on:
-  workflow_dispatch:
-    inputs:
-      distTag:
-        description: "Dist tag to publish"
-        required: true
-        default: "latest"
-  pull_request:
   push:
     branches:
       - "main"
@@ -15,26 +8,17 @@ on:
 jobs:
   build_and_testing:
     runs-on: ubuntu-latest
-    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
-    env:
-      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
           always-auth: true
           cache: "yarn"
           node-version: 20
-
-      - name: Creates local .npmrc
-        if: ${{github.event.inputs.distTag == 'latest'}}
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
       - name: Install
         run: yarn install --frozen-lockfile
@@ -46,10 +30,3 @@ jobs:
         run: |
           yarn build
           yarn test
-
-      - name: Release
-        if: ${{github.event.inputs.distTag == 'latest'}}
-        run: |
-          git config --global user.email "sergiomorenoalbert@gmail.com"
-          git config --global user.name "Lingui CI"
-          npm run release
