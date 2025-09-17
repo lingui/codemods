@@ -31,6 +31,9 @@ jobs:
           yarn install --frozen-lockfile
           yarn build
 
+      - name: Install npm CLI
+        run: yarn global add npm
+
       - name: Prepare Lingui-Bot git account
         uses: oleksiyrudenko/gha-git-credentials@v2-latest
         with:
